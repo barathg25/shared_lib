@@ -9,7 +9,7 @@ pipeline {
                     def config = [
                         cicdAgentLabel: 'cicd',
                         cdAgentLabel: 'cd',
-                        applicationType: 'java', // or 'nodejs' or 'angular'
+                        applicationType: 'java', // or 'nodejs' or 'angular' or 'deployment'
                         skipDependencyCheck: true,
                         dockerOrg: 'barathg25',
                         dockerCredentialsId: 'dockerhub',

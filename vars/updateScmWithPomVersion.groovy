@@ -18,13 +18,17 @@ def call(Map config) {
 
         echo "📌 Original version: ${originalVersion}"
 
-        // Increment patch version
-        def parts = originalVersion.tokenize('.')
-        def patchRaw = parts[2]
-        def patch = patchRaw.replaceAll(/\D.*/, '').toInteger() + 1
-        def suffix = patchRaw -~ /^\d+/  // Keep suffix like -SNAPSHOT
-        def newVersion = "${parts[0]}.${parts[1]}.${patch}${suffix}"
+        // Split version and suffix
+        def versionMain = originalVersion.tokenize('-')[0]
+        def suffix = originalVersion.contains('-') ? '-' + originalVersion.split('-', 2)[1] : ''
 
+        def versionParts = versionMain.tokenize('.')
+
+        // Increment last numeric part
+        def lastIndex = versionParts.size() - 1
+        versionParts[lastIndex] = (versionParts[lastIndex] as Integer) + 1
+
+        def newVersion = versionParts.join('.') + suffix
         echo "🚀 New version: ${newVersion}"
 
         // Update pom.xml
@@ -32,13 +36,12 @@ def call(Map config) {
 
         def cleanedRepoUrl = repoUrl.replaceFirst(/^https?:\/\//, '')
 
-        // Push changes to Git
+        // Git Push
         withCredentials([usernamePassword(
             credentialsId: gitCredentialsId,
             usernameVariable: 'GIT_USER',
             passwordVariable: 'GIT_PASS'
         )]) {
-            // sh "git pull --rebase https://${GIT_USER}:${GIT_PASS}@${cleanedRepoUrl} ${branch}"
             sh "git config user.email '${gitUserEmail}'"
             sh "git config user.name '${gitUserName}'"
             sh "git add ${pomFile}"

@@ -23,7 +23,8 @@ pipeline {
                         deploymentFilePath: "${env.JOB_NAME}/deployment.yaml",
                         kubernetesNamespace: 'my-app',
                         envReplaceFrom: 'br',
-                        envReplaceTo: 'br-2521'
+                        envReplaceTo: 'br-2521',
+                        dockerfilePath: 'if needed'
                     ]
 
                     main(config)
